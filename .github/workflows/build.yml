@@ -1,0 +1,36 @@
+name: Build Plugin Zip File
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        tools: composer:v2
+
+    - name: Build
+      run: |
+        composer install --quiet --no-dev --optimize-autoloader
+        
+    - name: Create build archive
+      run: |
+        mkdir -p wp2static-addon-advanced-crawling
+        rsync -r --exclude=".git" --exclude=".github" --exclude="tests" --exclude="tools" --exclude="wp2static-addon-advanced-crawling" . wp2static-addon-advanced-crawling/
+        zip --quiet -r -9 wp2static-addon-advanced-crawling.zip wp2static-addon-advanced-crawling
+        
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: wp2static-addon-advanced-crawling
+        path: wp2static-addon-advanced-crawling.zip
+        retention-days: 90
