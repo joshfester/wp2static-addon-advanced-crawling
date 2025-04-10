@@ -2,7 +2,8 @@ name: Build Plugin Zip File
 
 on:
   push:
-    branches: [ main ]
+    tags:
+      - "v*.*.*"
 
 jobs:
   build:
@@ -32,12 +33,13 @@ jobs:
           --include="/views/" \
           --include="/views/**" \
           --exclude="*" \
-          ./ wp2static/
-        zip --quiet -r -9 wp2static-addon-advanced-crawling.zip wp2static-addon-advanced-crawling
+          ./ wp2static-addon-advanced-crawling/
+        find wp2static-addon-advanced-crawling -type d -exec chmod 755 {} \;
+        find wp2static-addon-advanced-crawling -type f -exec chmod 644 {} \;
+        zip --quiet -r -9 -X wp2static-addon-advanced-crawling.zip wp2static-addon-advanced-crawling
         
-    - name: Upload build artifact
-      uses: actions/upload-artifact@v4
+    - name: Release
+      uses: softprops/action-gh-release@v1
       with:
-        name: wp2static-addon-advanced-crawling
-        path: wp2static-addon-advanced-crawling.zip
-        retention-days: 90
+        files: wp2static-addon-advanced-crawling.zip
+        generate_release_notes: true
