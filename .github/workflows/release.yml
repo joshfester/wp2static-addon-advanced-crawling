@@ -32,6 +32,8 @@ jobs:
           --include="/src/**" \
           --include="/views/" \
           --include="/views/**" \
+          --include="/vendor/" \
+          --include="/vendor/**" \
           --exclude="*" \
           ./ wp2static-addon-advanced-crawling/
         find wp2static-addon-advanced-crawling -type d -exec chmod 755 {} \;
